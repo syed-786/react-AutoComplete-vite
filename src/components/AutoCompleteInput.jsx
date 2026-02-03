@@ -8,10 +8,10 @@ export default function AutoCompleteInput() {
   const [cachedResults, setCachedResults] = useState({});
 
   const fetchRecipes = async () => {
-    if (searchText.trim() === '') {
-      setRecipes([]);
-      return;
-    }
+    // if (searchText.trim() === '') {
+    //   setRecipes([]);
+    //   return;
+    // }
 
     if (cachedResults[searchText]) {
       console.log('Fetching from cache', cachedResults);
@@ -39,6 +39,29 @@ export default function AutoCompleteInput() {
     return () => clearTimeout(timer);
   }, [searchText]);
 
+  function highlightText(text, query) {
+    if (!query) return text;
+
+    const lowerText = text.toLowerCase();
+    const lowerQuery = query.toLowerCase();
+
+    const matchIndex = lowerText.indexOf(lowerQuery);
+
+    if (matchIndex === -1) return text;
+
+    const before = text.slice(0, matchIndex);
+    const match = text.slice(matchIndex, matchIndex + query.length);
+    const after = text.slice(matchIndex + query.length);
+
+    return (
+      <>
+        {before}
+        <span className="highlight">{match}</span>
+        {after}
+      </>
+    );
+  }
+
   return (
     <div className="main-container">
       <h1>Auto Complete Search</h1>
@@ -54,7 +77,7 @@ export default function AutoCompleteInput() {
         <div className="results-container">
           {recipes?.map(item => (
             <div className="results-name" key={item.id}>
-              {item.name}
+              {highlightText(item.name, searchText)}
             </div>
           ))}
         </div>
